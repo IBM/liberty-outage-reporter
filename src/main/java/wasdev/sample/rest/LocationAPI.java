@@ -91,7 +91,7 @@ public class LocationAPI extends Application {
      *   "name":"Seattle"
      * }
      * </code>
-     * @param visitor The new Location to create.
+     * @param location The new Location to create.
      * @return The Location after it has been stored.  This will include a unique ID for the Location.
      */
     @POST
