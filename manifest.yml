@@ -1,0 +1,8 @@
+---
+applications:
+ - name: LibertyOutageReporter
+   path: target/LibertyOutageReporter.war
+   memory: 512M
+   instances: 1
+   name: liberty-outage-reporter
+   host: liberty-outage-reporter
