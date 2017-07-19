@@ -22,6 +22,7 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
@@ -103,6 +104,24 @@ public class LocationAPI extends Application {
       }
       store.persist(location);
       return String.format("Outage in %s has been added to the database.", location.getName());
+
+    }
+
+    @DELETE
+    @Produces("application/text")
+    @Consumes("application/text")
+    public String newFoo(String toRemove) {
+      if(store == null) {
+          return String.format("Outage in %s cleared!", toRemove);
+      }
+      for (Location doc : store.getAll()) {
+          String name = doc.getName();
+          if (name.equals(toRemove)){
+              store.delete(doc);
+          }
+      }
+      //store.delete(location);
+      return String.format("Outage in %s has been marked as cleared.", toRemove);
 
     }
 

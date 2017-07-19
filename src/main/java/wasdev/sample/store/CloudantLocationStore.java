@@ -108,10 +108,9 @@ public class CloudantLocationStore implements LocationStore{
 	}
 
 	@Override
-	public void delete(String id) {
-		Location Location = db.find(Location.class, id);
-		db.remove(id, Location.get_rev());
-
+	public void delete(Location location) {
+                //Location location = db.find(Location.class, id);
+		db.remove(location);
 	}
 
 	@Override

@@ -69,7 +69,7 @@ public interface LocationStore {
    * Deletes a ToDo from the store.
    * @param id The ID of the Location to delete.
    */
-  public void delete(String id);
+  public void delete(Location location);
 
   /**
    * Counts the number of Locations
