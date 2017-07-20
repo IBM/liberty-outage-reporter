@@ -121,7 +121,7 @@ public class LocationAPI extends Application {
           }
       }
       //store.delete(location);
-      return String.format("Outage in %s has been marked as cleared.", toRemove);
+      return String.format("Outage in %s has been cleared!", toRemove);
 
     }
 
