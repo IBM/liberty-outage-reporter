@@ -1,0 +1,44 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: liberty-outage-reporter
+  labels:
+    app: liberty-outage-reporter-app
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: liberty-outage-reporter
+    spec:
+      containers:
+      - name: liberty-outage-reporter
+        image: registry.ng.bluemix.net/mynamespace/liberty-outage-reporter
+        ports:
+          - containerPort: 9080
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: cloudant-secrets
+          mountPath: /etc/cloudant-secrets
+          readOnly: true
+      volumes:
+      - name: cloudant-secrets
+        secret:
+          secretName: my-secret
+        
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: liberty-outage-reporter-service
+  labels:
+    app: liberty-outage-reporter-app
+  namespace: default
+spec:
+  ports:
+    - port: 9080
+      targetPort: 9080
+      nodePort: 30052
+  selector:
+    name: liberty-outage-reporter
+  type: NodePort
