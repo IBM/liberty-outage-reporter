@@ -15,17 +15,26 @@
  *******************************************************************************/
 package wasdev.sample.store;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.cloudant.client.api.ClientBuilder;
 import com.cloudant.client.api.CloudantClient;
 import com.cloudant.client.api.Database;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.JsonObject;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.StringUtils;
 import wasdev.sample.Location;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CloudantLocationStore implements LocationStore{
 
@@ -57,12 +66,24 @@ public class CloudantLocationStore implements LocationStore{
 			}
 			url = cloudantCredentials.get("url").getAsString();
 		} else {
-			System.out.println("Running locally. Looking for credentials in cloudant.properties");
+			System.out.println("Not running with VCAP services. Looking for credentials in cloudant.properties");
 			url = VCAPHelper.getLocalProperties("cloudant.properties").getProperty("cloudant_url");
 			if(url == null || url.length()==0){
-				System.out.println("To use a database, set the Cloudant url in src/main/resources/cloudant.properties");
-				return null;
+				System.out.println("Explicit URL not set, check for Kubernetes secrets file");
+				String kubernetes_secrets_file = VCAPHelper.getLocalProperties("cloudant.properties").getProperty("kubernetes_secrets_file");
+				if (kubernetes_secrets_file == null || kubernetes_secrets_file.length() == 0){
+					System.out.println("To use a database, set the Cloudant url or kubernetes secret file in src/main/resources/cloudant.properties");
+					return null;
+				}
+
+				try {
+					url = readURLFromKubeSecretsFile(kubernetes_secrets_file);
+				} catch (IOException e) {
+					System.out.println("Exception when attempting to read kube secrets file: " + e);
+					return null;
+				}
 			}
+
 		}
 
 		try {
@@ -74,6 +95,36 @@ public class CloudantLocationStore implements LocationStore{
 			//e.printStackTrace();
 			return null;
 		}
+	}
+
+	private static String readURLFromKubeSecretsFile(String secretsFile) throws IOException {
+		String secretsJson = readKubeSecretsFiles(secretsFile);
+		ObjectMapper mapper = new ObjectMapper();
+		Map<String, Object> map;
+
+		// convert JSON string to Map
+		map = mapper.readValue(secretsJson, new TypeReference<Map<String, String>>(){});
+		String url = (String) map.get("url");
+		url = url.replaceFirst("https", "http"); //Temporary hack until certificates are figured out.
+		System.out.println("url: " + url);
+		return url;
+	}
+
+	private static String readKubeSecretsFiles(String secretsFile) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(secretsFile));
+
+		StringBuilder sb = new StringBuilder();
+		String line = br.readLine();
+
+		while (line != null) {
+			sb.append(line);
+			sb.append(System.lineSeparator());
+			line = br.readLine();
+		}
+		String everything = sb.toString();
+		br.close();
+
+		return everything;
 	}
 
 	@Override
