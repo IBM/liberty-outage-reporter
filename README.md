@@ -81,14 +81,14 @@ Next, we'll add a NoSQL database to this application and set up the application 
 
 ## 5. Use the database
 
-We're now going to update your local code to point to this database. We'll store the credentials for the services in a properties file. This file will get used ONLY when the application is running locally. When running in Bluemix, the credentials will be read from the VCAP_SERVICES environment variable.
+We're now going to update your local code to point to this database. We'll store the credentials for the services in a properties file. This file will get used ONLY when the application is running locally. When running in Bluemix, the credentials will be read from the `VCAP_SERVICES` environment variable.
 
-1. In Eclipse, open the file src/main/resources/cloudant.properties:
+1. In Eclipse, open the file `src/main/resources/cloudant.properties`:
   ```
   cloudant_url=
   ```
 
-2. In your browser open the Bluemix UI, select your App -> Connections -> Cloudant -> View Credentials (Note you may have create a set of credentials)
+2. In your browser open the Bluemix UI, select your `App` -> `Connections` -> `Cloudant` -> `View Credentials` (Note you may have create a set of credentials)
 
 3. Copy and paste just the `url` from the credentials to the `url` field of the `cloudant.properties` file.
 
@@ -110,7 +110,7 @@ We're now going to update your local code to point to this database. We'll store
     - In the `Servers` view right-click -> `New` -> `Server`
     - Select `IBM` -> `WebSphere Application Server Liberty`
     - Choose `Install from an archive or a repository`
-    - Enter a destination path (/Users/username/liberty)
+    - Enter a destination path (`/Users/username/liberty`)
     - Choose `WAS Liberty with Java EE 7 Web Profile`
     - Continue the wizard with default options to Finish
 
